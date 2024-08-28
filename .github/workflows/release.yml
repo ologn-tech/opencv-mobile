@@ -32,6 +32,7 @@ jobs:
       id: get_version
       run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
     - name: opencv2-source
+      if: false
       env:
         opencv-version: 2.4.13.7
       run: |
@@ -80,6 +81,7 @@ jobs:
         mv opencv-${{ env.opencv-version }} opencv-mobile-${{ env.opencv-version }}
         zip -9 -r opencv-mobile-${{ env.opencv-version }}.zip opencv-mobile-${{ env.opencv-version }}
     - name: opencv3-source
+      if: false
       env:
         opencv-version: 3.4.20
       run: |
@@ -229,11 +231,13 @@ jobs:
         mv opencv-${{ env.opencv-version }} opencv-mobile-${{ env.opencv-version }}
         zip -9 -r opencv-mobile-${{ env.opencv-version }}.zip opencv-mobile-${{ env.opencv-version }}
     - name: upload-opencv2-source
+      if: false
       uses: actions/upload-artifact@v4
       with:
         name: opencv-mobile-2.4.13.7-source
         path: opencv-mobile-2.4.13.7.zip
     - name: upload-opencv3-source
+      if: false
       uses: actions/upload-artifact@v4
       with:
         name: opencv-mobile-3.4.20-source
@@ -245,6 +249,7 @@ jobs:
         path: opencv-mobile-4.10.0.zip
 
   android:
+    if: false
     needs: [setup]
     runs-on: ubuntu-latest
     strategy:
@@ -346,6 +351,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   harmonyos:
+    if: false
     needs: [setup]
     runs-on: ubuntu-latest
     strategy:
@@ -441,6 +447,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   ios:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -513,6 +520,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   ios-simulator:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -595,6 +603,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   armlinux:
+    if: false
     needs: [setup]
     runs-on: ubuntu-latest
     strategy:
@@ -689,6 +698,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   macos:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -775,6 +785,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   mac-catalyst:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -857,6 +868,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   watchos:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -939,6 +951,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   watchos-simulator:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -1021,6 +1034,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   tvos:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -1103,6 +1117,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   tvos-simulator:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -1185,6 +1200,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   visionos:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -1257,6 +1273,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   visionos-simulator:
+    if: false
     needs: [setup]
     runs-on: macos-13
     strategy:
@@ -1339,6 +1356,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   windows:
+    if: false
     needs: [setup]
     strategy:
       matrix:
@@ -1447,6 +1465,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   ubuntu:
+    if: false
     needs: [setup]
     strategy:
       matrix:
@@ -1500,6 +1519,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   webassembly:
+    if: false
     needs: [setup]
     runs-on: ubuntu-20.04
     strategy:
@@ -1635,6 +1655,7 @@ jobs:
         path: ${{ env.PACKAGE_NAME }}.zip
 
   apple:
+    if: false
     needs: [macos, ios, ios-simulator, mac-catalyst, watchos, watchos-simulator, tvos, tvos-simulator, visionos, visionos-simulator]
     runs-on: macos-13
     strategy:
@@ -1744,26 +1765,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: milkv-duo
-            single-core: true
-            cmake-toolchain: riscv64-unknown-linux-musl.toolchain.cmake
-            setup-toolchain-cmd: |
-              wget -q https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
-              tar -xf host-tools.tar.gz
-            setup-env-cmd: |
-              export RISCV_ROOT_PATH=$GITHUB_WORKSPACE/host-tools/gcc/riscv64-linux-musl-x86_64
-            cmake-options: -DWITH_CVI=ON
-
-          - name: licheerv-nano
-            single-core: true
-            cmake-toolchain: riscv64-unknown-linux-musl.toolchain.cmake
-            setup-toolchain-cmd: |
-              wget -q https://sophon-file.sophon.cn/sophon-prod-s3/drive/23/03/07/16/host-tools.tar.gz
-              tar -xf host-tools.tar.gz
-            setup-env-cmd: |
-              export RISCV_ROOT_PATH=$GITHUB_WORKSPACE/host-tools/gcc/riscv64-linux-musl-x86_64
-            cmake-options: -DWITH_CVI=ON
-
           - name: luckfox-pico
             single-core: true
             cmake-toolchain: arm-rockchip830-linux-uclibcgnueabihf.toolchain.cmake
@@ -1772,59 +1773,6 @@ jobs:
             setup-env-cmd: |
               export TOOLCHAIN_ROOT_PATH=$GITHUB_WORKSPACE/luckfox-pico/tools/linux/toolchain/arm-rockchip830-linux-uclibcgnueabihf
             cmake-options: -DWITH_RK=ON
-
-          - name: yuzuki-lizard
-            single-core: true
-            cmake-toolchain: arm-openwrt-linux-muslgnueabi.toolchain.cmake
-            setup-toolchain-cmd: |
-              wget -q https://github.com/YuzukiHD/Yuzukilizard/releases/download/Toolchains/toolchain-sunxi-musl-gcc-830.tar.gz
-              tar -xf toolchain-sunxi-musl-gcc-830.tar.gz
-            setup-env-cmd: |
-              export TOOLCHAIN_ROOT_PATH=$GITHUB_WORKSPACE/toolchain-sunxi-musl-gcc-830/toolchain
-              export STAGING_DIR=$GITHUB_WORKSPACE/toolchain-sunxi-musl-gcc-830/toolchain
-            cmake-options: -DWITH_AW=ON
-
-          - name: tinyvision
-            single-core: true
-            cmake-toolchain: arm-openwrt-linux-muslgnueabi.toolchain.cmake
-            setup-toolchain-cmd: |
-              wget -q https://github.com/YuzukiHD/Yuzukilizard/releases/download/Toolchains/toolchain-sunxi-musl-gcc-830.tar.gz
-              tar -xf toolchain-sunxi-musl-gcc-830.tar.gz
-            setup-env-cmd: |
-              export TOOLCHAIN_ROOT_PATH=$GITHUB_WORKSPACE/toolchain-sunxi-musl-gcc-830/toolchain
-              export STAGING_DIR=$GITHUB_WORKSPACE/toolchain-sunxi-musl-gcc-830/toolchain
-            cmake-options: -DWITH_AW=ON
-
-          - name: yuzuki-chameleon
-            single-core: false
-            cmake-toolchain: arm-openwrt-linux-gnueabi.toolchain.cmake
-            setup-toolchain-cmd: |
-              wget -q https://github.com/YuzukiHD/YuzukiChameleon/releases/download/0.0.1/toolchain-sunxi-glibc-arm.tar.gz
-              tar -xf toolchain-sunxi-glibc-arm.tar.gz
-            setup-env-cmd: |
-              export TOOLCHAIN_ROOT_PATH=$GITHUB_WORKSPACE/toolchain
-              export STAGING_DIR=$GITHUB_WORKSPACE/toolchain
-            cmake-options: -DWITH_AW=ON
-
-          - name: purple-pi
-            single-core: false
-            cmake-toolchain: arm-linux-gnueabihf.toolchain.cmake
-            setup-toolchain-cmd: |
-              git clone --depth 1 https://github.com/industio/PurPle-Pi-R1.git
-              cd PurPle-Pi-R1/toolchain
-              sh install_toolchain.sh
-            setup-env-cmd: |
-              export PATH=$PATH:$GITHUB_WORKSPACE/PurPle-Pi-R1/toolchain/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf/bin
-            cmake-options:
-
-          - name: myir-t113i
-            single-core: false
-            cmake-toolchain: arm-linux-gnueabi.toolchain.cmake
-            setup-toolchain-cmd: |
-              git clone --depth 1 https://github.com/MYIR-ALLWINNER/toolchain.git
-            setup-env-cmd: |
-              export PATH=$PATH:$GITHUB_WORKSPACE/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin
-            cmake-options: -DWITH_AW=ON
 
     env:
       COMMON_CMAKE_OPTIONS: |
@@ -1894,7 +1842,7 @@ jobs:
   release:
     permissions:
       contents: write  # for softprops/action-gh-release to create a release
-    needs: [setup, android, harmonyos, ios, ios-simulator, armlinux, macos, mac-catalyst, watchos, watchos-simulator, tvos, tvos-simulator, visionos, visionos-simulator, windows, ubuntu, webassembly, apple, devboard]
+    needs: [setup, devboard]
     runs-on: ubuntu-latest
     steps:
     - name: download
