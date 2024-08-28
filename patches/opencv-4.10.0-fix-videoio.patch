@@ -1,0 +1,102 @@
+diff -Nuarp opencv-4.10.0.orig/modules/imgcodecs/src/loadsave.cpp opencv-4.10.0/modules/imgcodecs/src/loadsave.cpp
+--- opencv-4.10.0.orig/modules/imgcodecs/src/loadsave.cpp	2024-06-02 18:41:07.000000000 +0700
++++ opencv-4.10.0/modules/imgcodecs/src/loadsave.cpp	2024-08-28 17:18:33.695970478 +0700
+@@ -798,7 +798,7 @@ bool imwrite( const String& filename, In
+     CV_Assert(!_img.empty());
+ 
+     std::vector<Mat> img_vec;
+-    if (_img.isMatVector() || _img.isUMatVector())
++    if (_img.isMatVector())
+         _img.getMatVector(img_vec);
+     else
+         img_vec.push_back(_img.getMat());
+diff -Nuarp opencv-4.10.0.orig/modules/videoio/include/opencv2/videoio.hpp opencv-4.10.0/modules/videoio/include/opencv2/videoio.hpp
+--- opencv-4.10.0.orig/modules/videoio/include/opencv2/videoio.hpp	2024-06-02 18:41:07.000000000 +0700
++++ opencv-4.10.0/modules/videoio/include/opencv2/videoio.hpp	2024-08-28 17:20:27.915960474 +0700
+@@ -896,11 +896,6 @@ public:
+     */
+     virtual VideoCapture& operator >> (CV_OUT Mat& image);
+ 
+-    /** @overload
+-    @sa read()
+-    */
+-    virtual VideoCapture& operator >> (CV_OUT UMat& image);
+-
+     /** @brief Grabs, decodes and returns the next video frame.
+ 
+     @param [out] image the video frame is returned here. If no frames has been grabbed the image will be empty.
+@@ -1113,11 +1108,6 @@ public:
+     */
+     virtual VideoWriter& operator << (const Mat& image);
+ 
+-    /** @overload
+-    @sa write
+-    */
+-    virtual VideoWriter& operator << (const UMat& image);
+-
+     /** @brief Writes the next video frame
+ 
+     @param image The written frame. In general, color images are expected in BGR format.
+diff -Nuarp opencv-4.10.0.orig/modules/videoio/src/cap.cpp opencv-4.10.0/modules/videoio/src/cap.cpp
+--- opencv-4.10.0.orig/modules/videoio/src/cap.cpp	2024-06-02 18:41:07.000000000 +0700
++++ opencv-4.10.0/modules/videoio/src/cap.cpp	2024-08-28 17:21:03.525958259 +0700
+@@ -456,14 +456,6 @@ VideoCapture& VideoCapture::operator >>
+     return *this;
+ }
+ 
+-VideoCapture& VideoCapture::operator >> (UMat& image)
+-{
+-    CV_INSTRUMENT_REGION();
+-
+-    read(image);
+-    return *this;
+-}
+-
+ bool VideoCapture::set(int propId, double value)
+ {
+     CV_CheckNE(propId, (int)CAP_PROP_BACKEND, "Can't set read-only property");
+@@ -746,13 +738,6 @@ VideoWriter& VideoWriter::operator << (c
+     write(image);
+     return *this;
+ }
+-
+-VideoWriter& VideoWriter::operator << (const UMat& image)
+-{
+-    CV_INSTRUMENT_REGION();
+-    write(image);
+-    return *this;
+-}
+ 
+ // FIXIT OpenCV 4.0: make inline
+ int VideoWriter::fourcc(char c1, char c2, char c3, char c4)
+diff -Nuarp opencv-4.10.0.orig/modules/videoio/src/cap_ffmpeg.cpp opencv-4.10.0/modules/videoio/src/cap_ffmpeg.cpp
+--- opencv-4.10.0.orig/modules/videoio/src/cap_ffmpeg.cpp	2024-06-02 18:41:07.000000000 +0700
++++ opencv-4.10.0/modules/videoio/src/cap_ffmpeg.cpp	2024-08-28 17:21:30.565955558 +0700
+@@ -96,13 +96,6 @@ public:
+         if (!ffmpegCapture)
+             return false;
+ 
+-        // if UMat, try GPU to GPU copy using OpenCL extensions
+-        if (frame.isUMat()) {
+-            if (ffmpegCapture->retrieveHWFrame(frame)) {
+-                return true;
+-            }
+-        }
+-
+         if (flag == 0) {
+             if (!icvRetrieveFrame2_FFMPEG_p(ffmpegCapture, &data, &step, &width, &height, &cn, &depth))
+                 return false;
+@@ -168,13 +161,6 @@ public:
+             return;
+         CV_Assert(image.depth() == CV_8U || image.depth() == CV_16U);
+ 
+-        // if UMat, try GPU to GPU copy using OpenCL extensions
+-        if (image.isUMat()) {
+-            if (ffmpegWriter->writeHWFrame(image)) {
+-                return;
+-            }
+-        }
+-
+         icvWriteFrame_FFMPEG_p(ffmpegWriter, (const uchar*)image.getMat().ptr(), (int)image.step(), image.cols(), image.rows(), image.channels(), 0);
+     }
+     virtual bool open( const cv::String& filename, int fourcc, double fps, cv::Size frameSize, const VideoWriterParameters& params )
